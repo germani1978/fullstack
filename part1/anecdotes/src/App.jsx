@@ -29,8 +29,6 @@ const App = () => {
     }
 
     const mayorVotes = arr => {
-        // let mayorValue = -1
-        // let indexMayor = -1
         arr.forEach((value, index) => {
             if (value > mayorValue) {
                 setIndexMayorValue(index)
@@ -38,9 +36,6 @@ const App = () => {
             }
         })
     }
-
-    console.log(votes)
-    console.log(indexMayorValue)
 
     mayorVotes(votes)
 
@@ -53,7 +48,7 @@ const App = () => {
             <button onClick={handleButtonNext}>Next anecdotes</button>
             <h2>Anecdote with most votes</h2>
             {mayorValue !== 0 ? (
-                <p> {votes[indexMayorValue]} </p>
+                <p> {anecdotes[indexMayorValue]} </p>
             ) : (
                 <p>Not yet</p>
             )}
@@ -62,3 +57,5 @@ const App = () => {
 }
 
 export default App
+
+//empece ahora
