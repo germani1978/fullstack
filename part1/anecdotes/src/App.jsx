@@ -14,6 +14,8 @@ const App = () => {
 
     const [selected, setSelected] = useState(0)
     const [votes, setVotes] = useState(Array(anecdotes.length).fill(0))
+    const [mayorValue, setMayorValue] = useState(0)
+    const [indexMayorValue, setIndexMayorValue] = useState(-1)
 
     const handleButtonNext = () => {
         const index = Math.floor(Math.random() * anecdotes.length)
@@ -26,12 +28,35 @@ const App = () => {
         setVotes(copy)
     }
 
+    const mayorVotes = arr => {
+        // let mayorValue = -1
+        // let indexMayor = -1
+        arr.forEach((value, index) => {
+            if (value > mayorValue) {
+                setIndexMayorValue(index)
+                setMayorValue(value)
+            }
+        })
+    }
+
+    console.log(votes)
+    console.log(indexMayorValue)
+
+    mayorVotes(votes)
+
     return (
         <div>
+            <h2>Anecdote of the day</h2>
             <p>{anecdotes[selected]}</p>
             <p>has {votes[selected]} votes</p>
             <button onClick={handleVotes}>Votes</button>
             <button onClick={handleButtonNext}>Next anecdotes</button>
+            <h2>Anecdote with most votes</h2>
+            {mayorValue !== 0 ? (
+                <p> {votes[indexMayorValue]} </p>
+            ) : (
+                <p>Not yet</p>
+            )}
         </div>
     )
 }
