@@ -1,13 +1,14 @@
 import React from 'react'
 import Header from './Header'
 import Content from './Content'
+import Sum from './Sum'
 
 function Course({ course }) {
-    const [name, parts] = course
     return (
         <div>
-            <Header name={name} />
-            <Content parts={parts} />
+            <Header name={course.name} />
+            <Content parts={course.parts} />
+            <Sum parts={course.parts} />
         </div>
     )
 }
