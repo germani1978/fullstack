@@ -2,10 +2,14 @@ import { useState } from 'react'
 
 const App = () => {
     const [persons, setPersons] = useState([
-        { name: 'Arto Hellas', phone: '777-234-4567' }
+        { name: 'Arto Hellas', number: '040-123456', id: 1 },
+        { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
+        { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
+        { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
     ])
     const [newName, setNewName] = useState('')
     const [newPhone, setNewPhone] = useState('')
+    const [nameFilter, setNameFilter] = useState('')
 
     const handleForm = e => {
         e.preventDefault()
@@ -33,10 +37,25 @@ const App = () => {
         setNewPhone(e.target.value)
     }
 
+    const handleFilter = e => {
+        setNameFilter(e.target.value)
+    }
+
+    const personFilter =
+        nameFilter.length != 0
+            ? persons.filter(person =>
+                  person.name.toLowerCase().includes(nameFilter)
+              )
+            : persons
+
+    console.log({ personFilter })
+
     return (
         <div>
-            <h2>Phonebook</h2>
             <form onSubmit={handleForm}>
+                <h2>Phonebook</h2>
+                <input onChange={handleFilter} value={nameFilter} />
+                <h2>Add a new</h2>
                 <div>
                     name: <input onChange={handleInputName} value={newName} />
                 </div>
@@ -50,7 +69,7 @@ const App = () => {
             </form>
             <h2>Numbers</h2>
             <div>
-                {persons.map(person => (
+                {personFilter.map(person => (
                     <div key={person.name}>
                         {person.name} {person.phone}
                     </div>
