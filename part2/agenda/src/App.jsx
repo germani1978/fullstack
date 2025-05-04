@@ -6,11 +6,18 @@ const App = () => {
 
     const handleForm = e => {
         e.preventDefault()
+        const existPerson = persons.some(person => person.name == newName)
+        if (existPerson) {
+            setNewName('')
+            window.alert(`${newName} is already added to phonebook`)
+            return
+        }
         const objectPerson = {
             name: newName
         }
         setPersons(persons.concat(objectPerson))
         setNewName('')
+        console.log('paso')
     }
 
     const handleInput = e => {
