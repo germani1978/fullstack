@@ -12,9 +12,7 @@ const App = () => {
     // const [notes, setNotes] = useState([])
 
     useEffect(() => {
-        console.log('effect')
         axios.get('http://localhost:3001/persons').then(response => {
-            console.log('promise fulfilled')
             setPersons(response.data)
         })
     }, [])
@@ -32,9 +30,14 @@ const App = () => {
             name: newName,
             number: newPhone
         }
-        setPersons(persons.concat(objectPerson))
-        setNewName('')
-        setNewPhone('')
+
+        axios
+            .post('http://localhost:3001/persons', objectPerson)
+            .then(response => {
+                setPersons(persons.concat(response.data))
+                setNewName('')
+                setNewPhone('')
+            })
     }
 
     const handleInputName = e => {
