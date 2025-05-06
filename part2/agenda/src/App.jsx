@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Filter from './components/Filter'
 import FormPerson from './components/FormPerson'
 import Persons from './components/Persons'
-import { create, getAll } from './services/persons'
+import { create, getAll, deletePerson } from './services/persons'
 
 const App = () => {
     const [persons, setPersons] = useState([])
@@ -15,6 +15,22 @@ const App = () => {
             setPersons(response.data)
         })
     }, [])
+
+    const handleDeletePerson = id => {
+        //check if you want delete a person with id
+        const personToDelete = persons.find(person => person.id == id)
+        if (!window.confirm(`Delete a ${personToDelete.name}`)) return
+
+        //deleting person
+        const personsWithoudPersonId = [...persons].filter(
+            person => person.id != id
+        )
+
+        setPersons(personsWithoudPersonId)
+        deletePerson(id)
+            .then(response => console.log(response))
+            .catch(err => console.log(err))
+    }
 
     const handleForm = e => {
         e.preventDefault()
@@ -36,17 +52,11 @@ const App = () => {
         })
     }
 
-    const handleInputName = e => {
-        setNewName(e.target.value)
-    }
+    const handleInputName = e => setNewName(e.target.value)
 
-    const handleInputPhone = e => {
-        setNewPhone(e.target.value)
-    }
+    const handleInputPhone = e => setNewPhone(e.target.value)
 
-    const handleFilter = e => {
-        setNameFilter(e.target.value)
-    }
+    const handleFilter = e => setNameFilter(e.target.value)
 
     const personFilter =
         nameFilter.length != 0
@@ -68,7 +78,10 @@ const App = () => {
                 newPhone={newPhone}
             />
             <h2>Numbers</h2>
-            <Persons personFilter={personFilter} />
+            <Persons
+                personFilter={personFilter}
+                handleDeletePerson={handleDeletePerson}
+            />
         </div>
     )
 }
