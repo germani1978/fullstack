@@ -5,7 +5,7 @@ function Persons({ personFilter }) {
         <div>
             {personFilter.map(person => (
                 <div key={person.name}>
-                    {person.name} {person.phone}
+                    {person.name} {person.number}
                 </div>
             ))}
         </div>
