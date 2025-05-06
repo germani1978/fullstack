@@ -2,17 +2,16 @@ import { useEffect, useState } from 'react'
 import Filter from './components/Filter'
 import FormPerson from './components/FormPerson'
 import Persons from './components/Persons'
-import axios from 'axios'
+import { create, getAll } from './services/persons'
 
 const App = () => {
     const [persons, setPersons] = useState([])
     const [newName, setNewName] = useState('')
     const [newPhone, setNewPhone] = useState('')
     const [nameFilter, setNameFilter] = useState('')
-    // const [notes, setNotes] = useState([])
 
     useEffect(() => {
-        axios.get('http://localhost:3001/persons').then(response => {
+        getAll().then(response => {
             setPersons(response.data)
         })
     }, [])
@@ -30,14 +29,11 @@ const App = () => {
             name: newName,
             number: newPhone
         }
-
-        axios
-            .post('http://localhost:3001/persons', objectPerson)
-            .then(response => {
-                setPersons(persons.concat(response.data))
-                setNewName('')
-                setNewPhone('')
-            })
+        create(objectPerson).then(response => {
+            setPersons(persons.concat(response.data))
+            setNewName('')
+            setNewPhone('')
+        })
     }
 
     const handleInputName = e => {
