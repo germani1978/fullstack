@@ -53,7 +53,7 @@ const App = () => {
             } else {
                 //new person with changes
                 const resp = window.confirm(
-                    `name is already added to phonebook, replace the old number with a new one`
+                    `${newName} is already added to phonebook, replace the old number with a new one`
                 )
                 if (!resp) return
 
@@ -69,6 +69,8 @@ const App = () => {
                     //update the state
                     console.log('Updated person')
                     setPersons(aux)
+                    setNewName('')
+                    setNewPhone('')
                 })
                 return
             }
