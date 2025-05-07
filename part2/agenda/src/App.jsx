@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Filter from './components/Filter'
 import FormPerson from './components/FormPerson'
 import Persons from './components/Persons'
-import { create, getAll, deletePerson } from './services/persons'
+import { create, getAll, deletePerson, update } from './services/persons'
 
 const App = () => {
     const [persons, setPersons] = useState([])
@@ -10,12 +10,14 @@ const App = () => {
     const [newPhone, setNewPhone] = useState('')
     const [nameFilter, setNameFilter] = useState('')
 
+    //get from the server
     useEffect(() => {
         getAll().then(response => {
             setPersons(response.data)
         })
     }, [])
 
+    //delete a person
     const handleDeletePerson = id => {
         //check if you want delete a person with id
         const personToDelete = persons.find(person => person.id == id)
@@ -28,36 +30,71 @@ const App = () => {
 
         setPersons(personsWithoudPersonId)
         deletePerson(id)
-            .then(response => console.log(response))
+            .then(response => console.log('Deleted element'))
             .catch(err => console.log(err))
     }
 
     const handleForm = e => {
+        //evoid restart web
         e.preventDefault()
-        const existPerson = persons.some(person => person.name == newName)
-        if (existPerson) {
-            setNewName('')
-            setNewPhone('')
-            window.alert(`${newName} is already added to phonebook`)
-            return
+
+        //check if the person exist
+        const personeSavedAlready = persons.find(
+            person => person.name == newName
+        )
+
+        if (personeSavedAlready) {
+            //the person dont have changes
+            if (personeSavedAlready.number == newPhone) {
+                window.alert(`${newName} is already added to phonebook`)
+                setNewName('')
+                setNewPhone('')
+                return
+            } else {
+                //new person with changes
+                const resp = window.confirm(
+                    `name is already added to phonebook, replace the old number with a new one`
+                )
+                if (!resp) return
+
+                update(personeSavedAlready.id, {
+                    name: personeSavedAlready.name,
+                    number: newPhone
+                }).then(response => {
+                    const aux = persons.map(person =>
+                        person.id == personeSavedAlready.id
+                            ? response.data
+                            : person
+                    )
+                    //update the state
+                    console.log('Updated person')
+                    setPersons(aux)
+                })
+                return
+            }
         }
+
+        //create new Object of persons
         const objectPerson = {
             name: newName,
             number: newPhone
         }
+
+        //add to server
         create(objectPerson).then(response => {
+            //add to state
             setPersons(persons.concat(response.data))
             setNewName('')
             setNewPhone('')
         })
     }
-
     const handleInputName = e => setNewName(e.target.value)
 
     const handleInputPhone = e => setNewPhone(e.target.value)
 
     const handleFilter = e => setNameFilter(e.target.value)
 
+    //filter person by name
     const personFilter =
         nameFilter.length != 0
             ? persons.filter(person =>
