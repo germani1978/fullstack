@@ -3,12 +3,14 @@ import Filter from './components/Filter'
 import FormPerson from './components/FormPerson'
 import Persons from './components/Persons'
 import { create, getAll, deletePerson, update } from './services/persons'
+import Notificacion from './components/Notificacion'
 
 const App = () => {
     const [persons, setPersons] = useState([])
     const [newName, setNewName] = useState('')
     const [newPhone, setNewPhone] = useState('')
     const [nameFilter, setNameFilter] = useState('')
+    const [message, setMessage] = useState(null)
 
     //get from the server
     useEffect(() => {
@@ -34,6 +36,7 @@ const App = () => {
             .catch(err => console.log(err))
     }
 
+    //add or update a person
     const handleForm = e => {
         //evoid restart web
         e.preventDefault()
@@ -67,7 +70,10 @@ const App = () => {
                             : person
                     )
                     //update the state
-                    console.log('Updated person')
+                    setMessage('Person updated...')
+                    setTimeout(() => {
+                        setMessage(null)
+                    }, 5000)
                     setPersons(aux)
                     setNewName('')
                     setNewPhone('')
@@ -86,17 +92,27 @@ const App = () => {
         create(objectPerson).then(response => {
             //add to state
             setPersons(persons.concat(response.data))
+            setMessage('Person added')
+
+            setTimeout(() => {
+                setMessage(null)
+            }, 5000)
+
             setNewName('')
             setNewPhone('')
         })
     }
+
+    //set new name on imput
     const handleInputName = e => setNewName(e.target.value)
 
+    //set new phone on imput
     const handleInputPhone = e => setNewPhone(e.target.value)
 
+    //set filter of person name
     const handleFilter = e => setNameFilter(e.target.value)
 
-    //filter person by name
+    //get persons by filter
     const personFilter =
         nameFilter.length != 0
             ? persons.filter(person =>
@@ -107,6 +123,7 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
+            <Notificacion message={message} />
             <Filter handleFilter={handleFilter} nameFilter={nameFilter} />
             <h2>Add a new</h2>
             <FormPerson
