@@ -32,8 +32,18 @@ const App = () => {
 
         setPersons(personsWithoudPersonId)
         deletePerson(id)
-            .then(response => console.log('Deleted element'))
-            .catch(err => console.log(err))
+            .then(response => {
+                setMessage('Person deleted')
+                setTimeout(() => {
+                    setMessage(null)
+                }, 5000)
+            })
+            .catch(err => {
+                setMessage("The person can't deleted")
+                setTimeout(() => {
+                    setMessage(null)
+                }, 5000)
+            })
     }
 
     //add or update a person
@@ -63,21 +73,30 @@ const App = () => {
                 update(personeSavedAlready.id, {
                     name: personeSavedAlready.name,
                     number: newPhone
-                }).then(response => {
-                    const aux = persons.map(person =>
-                        person.id == personeSavedAlready.id
-                            ? response.data
-                            : person
-                    )
-                    //update the state
-                    setMessage('Person updated...')
-                    setTimeout(() => {
-                        setMessage(null)
-                    }, 5000)
-                    setPersons(aux)
-                    setNewName('')
-                    setNewPhone('')
                 })
+                    .then(response => {
+                        //update the state
+                        const aux = persons.map(person =>
+                            person.id == personeSavedAlready.id
+                                ? response.data
+                                : person
+                        )
+                        setPersons(aux)
+                        setNewName('')
+                        setNewPhone('')
+
+                        //make a notificacion
+                        setMessage('Person updated...')
+                        setTimeout(() => {
+                            setMessage(null)
+                        }, 5000)
+                    })
+                    .catch(err => {
+                        setMessage('Can update data of persons')
+                        setTimeout(() => {
+                            setMessage(null)
+                        }, 5000)
+                    })
                 return
             }
         }
