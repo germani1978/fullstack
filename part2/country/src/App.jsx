@@ -1,72 +1,61 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
+import Board from './components/Board'
 
 function App() {
     const [countries, setCountries] = useState(null)
     const [searchInput, setSearchInput] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
-        if (searchInput == '') return
-        axios
-            .get(`https://restcountries.com/v3.1/name/${searchInput}`)
-            .then(response => {
-                setCountries(response.data)
-                console.log({ searchInput })
-                console.log(response.data.length)
-            })
-            .catch(err => console.log(err.message))
+        const getData = () => {
+            //init
+            if (searchInput.trim() == '') {
+                setCountries(null)
+                return
+            }
+
+            //loading countries
+            setIsLoading(true)
+            axios
+                .get(`https://restcountries.com/v3.1/name/${searchInput}`)
+                .then(response => setCountries(response.data))
+                .catch(err => {
+                    //no one came for server for filter
+                    if (err.response.status == 404) {
+                        setCountries([])
+                    } else console.log(err.message)
+                })
+                .finally(() => {
+                    setIsLoading(false)
+                })
+        }
+
+        //evoid to many request to server
+        const debounce = setTimeout(getData, 500)
+        return () => clearTimeout(debounce)
     }, [searchInput])
 
-    const handleInput = e => {
-        setSearchInput(e.target.value)
-    }
+    const handleInput = e => setSearchInput(e.target.value)
 
     return (
         <div>
             <p>
                 find countries:{' '}
-                <input onChange={handleInput} value={searchInput} />
+                <input
+                    onChange={handleInput}
+                    value={searchInput}
+                    placeholder="Search..."
+                />
             </p>
 
-            {searchInput !== '' ? <Board countries={countries} /> : null}
+            <Board
+                countries={countries}
+                setSearchInput={setSearchInput}
+                isLoading={isLoading}
+            />
         </div>
     )
 }
 
 export default App
-
-const Board = ({ countries }) => {
-    if (countries == null) return <div>Fetching data...</div>
-
-    if (countries.length == 0) return <div>There not country</div>
-
-    if (countries.length > 10)
-        return <div>Too many matches, specify another filter</div>
-
-    if (countries.length == 1) {
-        const country = countries[0]
-        console.log(country.languages)
-
-        return (
-            <div>
-                <h2>{country.name.common}</h2>
-                <p>Capital: {country.capital}</p>
-                <p>Area: {country.area}</p>
-                <h2>Languages</h2>
-                {Object.values(country.languages).map(l => (
-                    <li key={l}>{l}</li>
-                ))}
-                <p></p>
-                <img src={country.flags.png} alt="" />
-            </div>
-        )
-    }
-
-    return (
-        <div>
-            {countries.map(country => (
-                <div key={country.name.common}>{country.name.common}</div>
-            ))}
-        </div>
-    )
-}
