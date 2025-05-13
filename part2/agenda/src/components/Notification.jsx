@@ -1,9 +1,9 @@
 import React from 'react'
-import './notificacion.css'
+import './notification.css'
 
-function Notificacion({ message }) {
+function Notification({ message }) {
     if (message == null) return null
     return <div className="error">{message}</div>
 }
 
-export default Notificacion
+export default Notification

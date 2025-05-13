@@ -3,7 +3,7 @@ import Filter from './components/Filter'
 import FormPerson from './components/FormPerson'
 import Persons from './components/Persons'
 import { create, getAll, deletePerson, update } from './services/persons'
-import Notificacion from './components/Notificacion'
+import Notification from './components/Notification'
 
 const App = () => {
     const [persons, setPersons] = useState([])
@@ -26,13 +26,13 @@ const App = () => {
         if (!window.confirm(`Delete a ${personToDelete.name}`)) return
 
         //deleting person
-        const personsWithoudPersonId = [...persons].filter(
-            person => person.id != id
-        )
 
-        setPersons(personsWithoudPersonId)
         deletePerson(id)
             .then(response => {
+                const personsWithoutPersonId = [...persons].filter(
+                    person => person.id != id
+                )
+                setPersons(personsWithoutPersonId)
                 setMessage('Person deleted')
                 setTimeout(() => {
                     setMessage(null)
@@ -48,36 +48,36 @@ const App = () => {
 
     //add or update a person
     const handleForm = e => {
-        //evoid restart web
+        //not restart web
         e.preventDefault()
 
         //check if the person exist
-        const personeSavedAlready = persons.find(
+        const personSavedAlready = persons.find(
             person => person.name == newName
         )
 
-        if (personeSavedAlready) {
-            //the person dont have changes
-            if (personeSavedAlready.number == newPhone) {
-                window.alert(`${newName} is already added to phonebook`)
+        if (personSavedAlready) {
+            //the person don't have changes
+            if (personSavedAlready.number == newPhone) {
+                window.alert(`${newName} is already added to agenda`)
                 setNewName('')
                 setNewPhone('')
                 return
             } else {
                 //new person with changes
                 const resp = window.confirm(
-                    `${newName} is already added to phonebook, replace the old number with a new one`
+                    `${newName} is already added to agenda, replace the old number with a new one`
                 )
                 if (!resp) return
 
-                update(personeSavedAlready.id, {
-                    name: personeSavedAlready.name,
+                update(personSavedAlready.id, {
+                    name: personSavedAlready.name,
                     number: newPhone
                 })
                     .then(response => {
                         //update the state
                         const aux = persons.map(person =>
-                            person.id == personeSavedAlready.id
+                            person.id == personSavedAlready.id
                                 ? response.data
                                 : person
                         )
@@ -85,7 +85,7 @@ const App = () => {
                         setNewName('')
                         setNewPhone('')
 
-                        //make a notificacion
+                        //make a notification
                         setMessage('Person updated...')
                         setTimeout(() => {
                             setMessage(null)
@@ -122,10 +122,10 @@ const App = () => {
         })
     }
 
-    //set new name on imput
+    //set new name on input
     const handleInputName = e => setNewName(e.target.value)
 
-    //set new phone on imput
+    //set new phone on input
     const handleInputPhone = e => setNewPhone(e.target.value)
 
     //set filter of person name
@@ -142,7 +142,7 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
-            <Notificacion message={message} />
+            <Notification message={message} />
             <Filter handleFilter={handleFilter} nameFilter={nameFilter} />
             <h2>Add a new</h2>
             <FormPerson
