@@ -39,7 +39,12 @@ const App = () => {
                 }, 5000)
             })
             .catch(err => {
+                console.log({ id })
+                console.log({ persons })
+
                 setMessage("The person can't deleted")
+                console.log(err.message)
+
                 setTimeout(() => {
                     setMessage(null)
                 }, 5000)
