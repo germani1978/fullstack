@@ -9,29 +9,6 @@ import Agenda from './agenda.js'
 //PORT
 const PORT = process.env.PORT || 3001
 
-// let persons = [
-//     {
-//         id: 1,
-//         name: 'Arto Hellas',
-//         number: '040-123456'
-//     },
-//     {
-//         id: 2,
-//         name: 'Ada Lovelace',
-//         number: '39-44-5323523'
-//     },
-//     {
-//         id: 3,
-//         name: 'Dan Abramov',
-//         number: '12-43-234345'
-//     },
-//     {
-//         id: 4,
-//         name: 'Mary Poppendieck',
-//         number: '39-23-6423122'
-//     }
-// ]
-
 //to create server
 const app = express()
 morgan.token('type', function (req, res) {
@@ -65,17 +42,17 @@ app.get('/api/persons', (request, response) => {
 
 //get info
 app.get('/info', (request, response) => {
-    const lon = Agenda.length
-    const date = Date()
-    response.send(`<p>Phone has info for ${lon} people</p><p>${date}</p>`)
+    Agenda.countDocuments({}).then(count => {
+        const date = Date()
+        response.send(`<p>Phone has info for ${count} people</p><p>${date}</p>`)
+    })
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
     Agenda.findById(request.params.id)
         .then(person => response.status(200).json(person))
         .catch(err => {
-            console.log(err)
-            return response.status(400).json({ msg: 'person not found' })
+            next(err)
         })
 })
 
@@ -99,11 +76,23 @@ app.post('/api/persons/', (request, response) => {
     })
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
     Agenda.findByIdAndDelete(request.params.id)
-        .then(res => response.status(204).end)
-        .catch(err => response.status(404).json({ msg: 'Not deleted' }))
+        .then(res => response.status(204).end())
+        .catch(err => next(err))
 })
+
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+
+    if (error.name === 'CastError') {
+        return response.status(400).send({ error: 'malformatted id' })
+    }
+
+    next(error)
+}
+
+app.use(errorHandler)
 
 //listen on PORT
 app.listen(PORT, () => {
