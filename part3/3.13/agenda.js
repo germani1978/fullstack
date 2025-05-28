@@ -4,8 +4,8 @@ dotenv.config()
 
 mongoose.set('strictQuery', false)
 
-// const url = process.env.MONGO_URI
-const url = 'mongodb://localhost:27017/myBaseDatos'
+const url = process.env.MONGO_URI
+// const url = 'mongodb://localhost:27017/myBaseDatos'
 
 mongoose
     .connect(url)
