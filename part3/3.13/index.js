@@ -70,12 +70,14 @@ app.get('/info', (request, response) => {
     response.send(`<p>Phone has info for ${lon} people</p><p>${date}</p>`)
 })
 
+//get person by id
 app.get('/api/persons/:id', (request, response) => {
     Agenda.findById(request.params.id)
         .then(person => response.status(200).json(person))
         .catch(err => response.status(404).json({ msg: 'person not found' }))
 })
 
+//save in mongodb
 app.post('/api/persons/', (request, response) => {
     //extract body
     const body = request.body

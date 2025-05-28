@@ -4,32 +4,33 @@ import cors from 'cors'
 
 import dotenv from 'dotenv'
 dotenv.config()
+import Agenda from './agenda.js'
 
 //PORT
 const PORT = process.env.PORT || 3001
 
-let persons = [
-    {
-        id: 1,
-        name: 'Arto Hellas',
-        number: '040-123456'
-    },
-    {
-        id: 2,
-        name: 'Ada Lovelace',
-        number: '39-44-5323523'
-    },
-    {
-        id: 3,
-        name: 'Dan Abramov',
-        number: '12-43-234345'
-    },
-    {
-        id: 4,
-        name: 'Mary Poppendieck',
-        number: '39-23-6423122'
-    }
-]
+// let persons = [
+//     {
+//         id: 1,
+//         name: 'Arto Hellas',
+//         number: '040-123456'
+//     },
+//     {
+//         id: 2,
+//         name: 'Ada Lovelace',
+//         number: '39-44-5323523'
+//     },
+//     {
+//         id: 3,
+//         name: 'Dan Abramov',
+//         number: '12-43-234345'
+//     },
+//     {
+//         id: 4,
+//         name: 'Mary Poppendieck',
+//         number: '39-23-6423122'
+//     }
+// ]
 
 //to create server
 const app = express()
@@ -55,28 +56,30 @@ app.use(
     )
 )
 
+//get all persons of agenda
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Agenda.find({}).then(persons => {
+        response.json(persons)
+    })
 })
 
+//get info
 app.get('/info', (request, response) => {
-    const lon = persons.length
+    const lon = Agenda.length
     const date = Date()
     response.send(`<p>Phone has info for ${lon} people</p><p>${date}</p>`)
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const person = persons.find(
-        person => person.id === Number(request.params.id)
-    )
-    if (!person) response.status(404).json({ msg: 'person not found' })
-    else response.json(person)
+    Agenda.findById(request.params.id)
+        .then(person => response.status(200).json(person))
+        .catch(err => {
+            console.log(err)
+            return response.status(400).json({ msg: 'person not found' })
+        })
 })
 
 app.post('/api/persons/', (request, response) => {
-    //create random id
-    const id = persons.length === 0 ? 0 : Math.floor(Math.random() * 1000000)
-
     //extract body
     const body = request.body
 
@@ -86,22 +89,20 @@ app.post('/api/persons/', (request, response) => {
             .status(400)
             .json({ error: 'name and number are required' })
 
-    const nameExists = persons.some(person => person.name === body.name)
-    if (nameExists) {
-        return response.status(400).json({ error: 'name must be unique' })
-    }
-
     //add new person
-    const person = { id: id, name: body.name, number: body.number }
-    persons.push(person)
-
-    //send response
-    response.status(201).json(person)
+    const person = new Agenda({
+        name: body.name,
+        number: body.number
+    })
+    person.save().then(personSave => {
+        response.status(201).json(personSave)
+    })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-    persons = persons.filter(person => person.id !== Number(request.params.id))
-    response.status(204).end()
+    Agenda.findByIdAndDelete(request.params.id)
+        .then(res => response.status(204).end)
+        .catch(err => response.status(404).json({ msg: 'Not deleted' }))
 })
 
 //listen on PORT
