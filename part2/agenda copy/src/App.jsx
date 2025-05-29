@@ -24,7 +24,7 @@ const App = () => {
         //slect the person with id
         const personToDelete = persons.find(person => person.id == id)
 
-        //if nop exist exit
+        //if not exist exit
         if (!personToDelete) return
 
         // if user rehuse to delete exit
@@ -94,7 +94,8 @@ const App = () => {
                         }, 5000)
                     })
                     .catch(err => {
-                        setMessage('Can update data of persons')
+                        console.error(err.response.data.error)
+                        setMessage(err.response.data.error)
                         setTimeout(() => {
                             setMessage(null)
                         }, 5000)
@@ -108,7 +109,6 @@ const App = () => {
             name: newName,
             number: newPhone
         }
-
         //add to server
         create(objectPerson)
             .then(response => {
@@ -124,7 +124,11 @@ const App = () => {
                 setNewPhone('')
             })
             .catch(err => {
-                console.error(err)
+                console.error(err.response.data.error)
+                setMessage(err.response.data.error)
+                setTimeout(() => {
+                    setMessage(null)
+                }, 5000)
             })
     }
 
