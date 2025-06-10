@@ -1,0 +1,30 @@
+{
+  "name": "part1",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "node --test",
+    "lint": "eslint ."
+  },
+  "author": "germani benitez",
+  "license": "MIT",
+  "description": "backend of phone",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.15.1",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.27.0",
+    "@stylistic/eslint-plugin": "^4.4.0",
+    "@types/express": "^5.0.1",
+    "eslint": "^9.27.0",
+    "globals": "^16.2.0",
+    "nodemon": "^3.1.10"
+  }
+}
